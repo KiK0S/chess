@@ -1,0 +1,6 @@
+Chess pieces:
+- "Chess Pieces" by Anonymous on OpenGameArt
+- License: CC0
+- Source: https://opengameart.org/content/chess-pieces
+- Download: https://opengameart.org/sites/default/files/chess.zip
+- Imported: 2026-01-25

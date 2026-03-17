@@ -1,0 +1,3 @@
+[submodule "3rd-party/engine"]
+	path = 3rd-party/engine
+	url = git@github.com:KiK0S/engine-wip.git

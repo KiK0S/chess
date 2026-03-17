@@ -1,0 +1,49 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ssh-key: ${{ secrets.SUBMODULES_SSH_KEY }}
+          persist-credentials: false
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Configure and build web target
+        run: |
+          emcmake cmake -S . -B build-web -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-web --parallel
+
+      - name: Prepare Pages artifact
+        run: |
+          set -eux
+          mkdir -p site
+          cp build-web/chess.html site/index.html
+          cp build-web/chess.js site/
+          cp build-web/chess.wasm site/
+          if [ -f build-web/chess.data ]; then cp build-web/chess.data site/; fi
+          if [ -d build-web/assets ]; then
+            mkdir -p site/assets
+            cp -r build-web/assets/. site/assets/
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

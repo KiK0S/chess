@@ -35,6 +35,16 @@ endif()
 
 add_subdirectory(3rd-party/engine/libs/platform)
 
+if(ENGINE_PLATFORM STREQUAL "web")
+  target_compile_options(engine_platform PUBLIC "-sUSE_SDL=2")
+
+  # The engine target currently mixes native and web platform backends.
+  # Web builds should compile only the Emscripten backend.
+  get_target_property(engine_platform_sources engine_platform SOURCES)
+  list(FILTER engine_platform_sources EXCLUDE REGEX "platform_sdl\\.cpp$")
+  set_property(TARGET engine_platform PROPERTY SOURCES "${engine_platform_sources}")
+endif()
+
 add_executable(chess
   src/main.cpp
   src/chess/ai.cpp
